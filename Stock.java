@@ -5,11 +5,13 @@ public class Stock {
   private ArrayList<Double> values = new ArrayList<>();
   private double price;
   private int day;
+  private String name;
   //volatility is a multiplier, where the change of price is given by:
   //change in price = volatility x (random number between 0.0 and 1.0)
   private double volatility;
   private Random rd = new Random();
-  public Stock() {
+  public Stock(String n) {
+    name=n;
     //day 0 at initialization
     day = 0;
     //price will be between $5 and $199
@@ -39,5 +41,9 @@ public class Stock {
   }
   public int getDay() {
     return day;
+  }
+  public String getName()
+  {
+    return name;
   }
 }
