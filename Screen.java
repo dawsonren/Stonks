@@ -2,21 +2,26 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import java.text.DecimalFormat;
 //need to change the showGraph(), updateMoneyEarned() and updateTime() to work with actual stocks
-
+//dont forget to format cash, stockValue, and netWorth
 public class Screen extends JFrame implements ActionListener
 {
+    private static DecimalFormat two = new DecimalFormat ("0.00");
     //these are the buttons for stocks
-    private JButton s1,s2,s3,s4,s5;
+    private JButton s1,s2,s3,s4,s5, buy, sell,newDay; 
+    private Stock stockSelected;
     //Jpanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
     JPanel p1 = new JPanel();
     JPanel p2 = new JPanel();
     JPanel p3 = new JPanel();
     //these are the stocks that the person can look at, initialized in getStockList
     private Stock stock1, stock2, stock3, stock4, stock5;
-    private JLabel moneyEarned, time, graph;
-    int day=0, earnings=0;
+    private JLabel cash, stockValue, netWorth, time, graph, stocksOwned;
+    private int day=0;
+    private double c=0, sv=0, nw=0;
+    
+    private Player test= new Player();
 
     public Screen()
     {
@@ -28,11 +33,21 @@ public class Screen extends JFrame implements ActionListener
 
         p1.setLayout(new GridLayout(5,1));
         getStockList();
-
-        p3.setLayout(new GridLayout(1,2));
-
-        graph = new JLabel(" ");
-        p2.add(graph);
+        
+        p2.setLayout(new GridLayout(4,1));
+        p3.setLayout(new GridLayout(1,5));
+        
+        //this is the setup for what player will see when they select a stock
+        buy = new JButton("Buy");
+        buy.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        buy.addActionListener(this);
+        
+        sell=new JButton("Sell");
+        sell.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        sell.addActionListener(this);
+        
+        stocksOwned = new JLabel ("");
+        p2.add(stocksOwned);
 
         //menu for what screen the player is looking at (overview, buy, sell, help)
         JMenuBar bar = new JMenuBar();
@@ -56,17 +71,37 @@ public class Screen extends JFrame implements ActionListener
         menu.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         win.add(bar, BorderLayout.NORTH);
 
-        //Total earnings while in the game and the time that has passed
-        moneyEarned = new JLabel("Total Earnings: "+ earnings);
-        moneyEarned.setFont(new Font("Times New Roman", Font.PLAIN, 24));
+        
+        //Bottom of screen (cash, stockValue, netWorth, day and NewDay button)
+        cash = new JLabel("Cash: "+ two.format(c));
+        cash.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        
+        stockValue = new JLabel("Stock Value: "+ two.format(sv));
+        stockValue.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        
+        netWorth = new JLabel("Net Worth: "+ two.format(nw));
+        netWorth.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        
         time= new JLabel("                       " + day +" days");
-        time.setFont(new Font("Times New Roman", Font.PLAIN, 24));
-        p3.add(moneyEarned);
+        time.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        
+        newDay=new JButton("New Day");
+        newDay.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        
+        p3.add(cash);
+        p3.add(stockValue);
+        p3.add(netWorth);
         p3.add(time);
-
+        p3.add(newDay);
+        
+        
+        //adding everythign to window and sets size
+        graph = new JLabel(" ");
+        
         win.add(p1, BorderLayout.WEST);
         win.add(p2, BorderLayout.EAST);
         win.add(p3, BorderLayout.SOUTH);
+        win.add(graph, BorderLayout.CENTER);
 
         setVisible(true);
         setSize(1000,650);
@@ -75,18 +110,34 @@ public class Screen extends JFrame implements ActionListener
 
     public void actionPerformed (ActionEvent e)
     {
+        //stock selected is the stock most recently clicked on to keep track of which stock we are viewing
         JButton buttonPressed = (JButton)e.getSource();
 
         if(buttonPressed==s1)
-            showGraph(s1);
+        {
+            stockSelected=stock1;
+            displayStock(s1);
+        }
         else if(buttonPressed==s2)
-            showGraph(s2);
+        {
+            stockSelected=stock2;
+            displayStock(s2);
+        }
         else if(buttonPressed==s3)
-            showGraph(s3);
+        {
+            stockSelected=stock3;
+            displayStock(s3);
+        }
         else if(buttonPressed==s4)
-            showGraph(s4);
+        {
+            stockSelected=stock4;
+            displayStock(s4);
+        }
         else if(buttonPressed==s5)
-            showGraph(s5);
+        {
+            stockSelected=stock5;
+            displayStock(s5);
+        }
     }
 
     //should give the strings the name of the stock they will hold
@@ -133,10 +184,16 @@ public class Screen extends JFrame implements ActionListener
     }
 
     //takes the button given by action performed and displays the corresponding graph
-    public void showGraph(JButton b)
+    public void displayStock (JButton b)
     {
         //needs to be replaced with the graphs that match up with the stock
         graph.setText("graph");
+        p2.add(buy);
+        p2.add(sell);
+        //System.out.println(stockSelected.getName());
+        //stocksOwned.setText(test.getValue(stockSelected.getName()));
+        //System.out.println(s);
+        //stocksOwned.setText(" "+s+" ");
     }
 
     public void updateMoneyEarned()
@@ -145,6 +202,7 @@ public class Screen extends JFrame implements ActionListener
 
     public void updateTime()
     {
+        day++;
     }
 
     public static void main (String [] args)
