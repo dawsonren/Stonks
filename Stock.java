@@ -46,4 +46,7 @@ public class Stock {
   {
     return name;
   }
+  public ArrayList<Double> values() {
+    return values;
+  }
 }
