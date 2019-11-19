@@ -10,7 +10,8 @@ public class Screen extends JFrame implements ActionListener
 {
     private static DecimalFormat two = new DecimalFormat ("0.00");
     //these are the buttons for stocks
-    private JButton s1, s2, s3, s4, s5, buy, sell, newDay; 
+    private JButton s1, s2, s3, s4, s5, newDay; 
+    private JMenuItem m1, m2, m3, m4;
     private Stock stockSelected;
     //Jpanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
     JPanel p1 = new JPanel();
@@ -38,29 +39,24 @@ public class Screen extends JFrame implements ActionListener
         p2.setLayout(new GridLayout(4,1));
         p3.setLayout(new GridLayout(1,5));
         
-        //this is the setup for what player will see when they select a stock
-        buy = new JButton("Buy");
-        buy.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        buy.addActionListener(this);
-        
-        sell=new JButton("Sell");
-        sell.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        sell.addActionListener(this);
-        
         stocksOwned = new JLabel ("");
         p2.add(stocksOwned);
 
         //menu for what screen the player is looking at (overview, buy, sell, help)
         JMenuBar bar = new JMenuBar();
         JMenu menu= new JMenu("Menu");
-        JMenuItem m1 = new JMenuItem("Overview");
+        m1 = new JMenuItem("Overview");
         m1.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        JMenuItem m2 = new JMenuItem("Buy");
+        m1.addActionListener(this);
+        m2 = new JMenuItem("Buy");
         m2.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        JMenuItem m3 = new JMenuItem("Sell");
+        m2.addActionListener(this);
+        m3 = new JMenuItem("Sell");
         m3.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        JMenuItem m4 = new JMenuItem("Help");
+        m3.addActionListener(this);
+        m4 = new JMenuItem("Help");
         m4.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        m4.addActionListener(this);
 
         //JMenu for swtching what you are seeing
         menu.add(m1);
@@ -112,29 +108,41 @@ public class Screen extends JFrame implements ActionListener
     public void actionPerformed (ActionEvent e)
     {
         //stock selected is the stock most recently clicked on to keep track of which stock we are viewing
-        JButton buttonPressed = (JButton)e.getSource();
+        if (e.getSource() == m1) {
+            
+        } else if(e.getSource() == m2) {
+            String[] stockNames = {stock1.getName(), stock2.getName(), stock3.getName(), stock4.getName(), stock5.getName()};
+            String choice = (String)JOptionPane.showInputDialog(this, "Choose your stock: ", "Buy Stocks", JOptionPane.PLAIN_MESSAGE, null, stockNames, "Apple");
+            if ((choice != null) && (choice.length() > 0)) {
+                System.out.println(choice);
+            }
+        } else if (e.getSource() == m3) {
+            
+        } else if (e.getSource() == m4) {
+            
+        }
 
-        if(buttonPressed==s1)
+        if(e.getSource()==s1)
         {
             stockSelected=stock1;
             Graph.showGraph(stock1.values());
         }
-        else if(buttonPressed==s2)
+        else if(e.getSource()==s2)
         {
             stockSelected=stock2;
             Graph.showGraph(stock2.values());
         }
-        else if(buttonPressed==s3)
+        else if(e.getSource()==s3)
         {
             stockSelected=stock3;
             Graph.showGraph(stock3.values());
         }
-        else if(buttonPressed==s4)
+        else if(e.getSource()==s4)
         {
             stockSelected=stock4;
             Graph.showGraph(stock4.values());
         }
-        else if(buttonPressed==s5)
+        else if(e.getSource()==s5)
         {
             stockSelected=stock5;
             Graph.showGraph(stock5.values());
@@ -182,19 +190,6 @@ public class Screen extends JFrame implements ActionListener
         p1.add(s3);
         p1.add(s4);
         p1.add(s5);
-    }
-
-    //takes the button given by action performed and displays the corresponding graph
-    public void displayStock (JButton b)
-    {
-        //needs to be replaced with the graphs that match up with the stock
-        graph.setText("graph");
-        p2.add(buy);
-        p2.add(sell);
-        //System.out.println(stockSelected.getName());
-        //stocksOwned.setText(test.getValue(stockSelected.getName()));
-        //System.out.println(s);
-        //stocksOwned.setText(" "+s+" ");
     }
 
     public void updateMoneyEarned()
