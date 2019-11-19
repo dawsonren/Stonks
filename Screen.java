@@ -1,15 +1,16 @@
-//this is for the gui
+//Creates GUI
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
+
 //need to change the showGraph(), updateMoneyEarned() and updateTime() to work with actual stocks
 //dont forget to format cash, stockValue, and netWorth
 public class Screen extends JFrame implements ActionListener
 {
     private static DecimalFormat two = new DecimalFormat ("0.00");
     //these are the buttons for stocks
-    private JButton s1,s2,s3,s4,s5, buy, sell,newDay; 
+    private JButton s1, s2, s3, s4, s5, buy, sell, newDay; 
     private Stock stockSelected;
     //Jpanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
     JPanel p1 = new JPanel();
@@ -21,7 +22,7 @@ public class Screen extends JFrame implements ActionListener
     private int day=0;
     private double c=0, sv=0, nw=0;
     
-    private Player test= new Player();
+    private Player test = new Player();
 
     public Screen()
     {
@@ -116,27 +117,27 @@ public class Screen extends JFrame implements ActionListener
         if(buttonPressed==s1)
         {
             stockSelected=stock1;
-            displayStock(s1);
+            Graph.showGraph(stock1.values());
         }
         else if(buttonPressed==s2)
         {
             stockSelected=stock2;
-            displayStock(s2);
+            Graph.showGraph(stock2.values());
         }
         else if(buttonPressed==s3)
         {
             stockSelected=stock3;
-            displayStock(s3);
+            Graph.showGraph(stock3.values());
         }
         else if(buttonPressed==s4)
         {
             stockSelected=stock4;
-            displayStock(s4);
+            Graph.showGraph(stock4.values());
         }
         else if(buttonPressed==s5)
         {
             stockSelected=stock5;
-            displayStock(s5);
+            Graph.showGraph(stock5.values());
         }
     }
 
