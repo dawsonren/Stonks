@@ -4,59 +4,52 @@ import java.awt.geom.Line2D;
 import java.util.*;
 import java.lang.*;
 
-public class Graph extends JFrame {
-    private int width, height;
+public class Graph extends JPanel {
+    final int PAD = 20;
+    final int axisThickness = 3;
+    //xpos and ypos are offset values because it fits within a larger JFrame
     private ArrayList<Double> values;
-
-    public Graph(int w, int h, ArrayList<Double> v) {
-        height = h;
-        width = w;
+    private Color color = Color.WHITE;
+    public Graph(ArrayList<Double> v) {
         values = v;
-
-        Container win = getContentPane();
-
-        //graph has name and trend and points
-        ColorPanel canvas = new ColorPanel(Color.WHITE);
-        win.add(canvas);
-        setSize(w, h);
-        setVisible(true);
+        setBackground(color);
     }
-
-    public class ColorPanel extends JPanel{
-        public ColorPanel(Color c) {
-            setBackground(c);
-        }
-        public void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g.fillRect(20,0, 3, (height - 20));
-            g.fillRect(20,(height - 23), (width - 20), 3);
-            double y_max = 0;
-            for(int x = 0; x < values.size(); x++){
-                if(values.get(x) > y_max){
-                    y_max = values.get(x);
-                }
+    public void paintComponent(Graphics g) {
+        int width = getWidth();
+        int height = getHeight();
+        
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g.fillRect(PAD, PAD, axisThickness, height - 2 * PAD);
+        g.fillRect(PAD, height - PAD, (width - 2 * PAD), axisThickness);
+        
+        double y_max = 0;
+        for(int x = 0; x < values.size(); x++){
+            if(values.get(x) > y_max){
+                y_max = values.get(x);
             }
-            System.out.println(y_max);
-            for (int x = 0; x < values.size() - 1; x++) {
-                double xPoint1 = ((x * (width - 40)) / (double)(values.size() - 1)) + 20;
-                double yPoint1 = (values.get(x) / y_max) * (height - 40) + 20;
-                double xPoint2 = (((x + 1) * (width - 40)) / (double)(values.size() - 1)) + 20;
-                double yPoint2 = (values.get(x + 1) / y_max) * (height - 40) + 20;
-                System.out.printf("(%s, %s), (%s, %s) ", xPoint1, yPoint1, xPoint2, yPoint2);
-                g2.draw(new Line2D.Double(xPoint1, yPoint1 ,xPoint2, yPoint2));
-            }
-            g.setColor(Color.BLACK);
         }
+        
+        double xScale = (width - 2 * PAD) / (double)(values.size() + 1);
+        double yScale = (height - 2 * PAD) / y_max;
+        
+        for (int x = 0; x < values.size() - 1; x++) {
+            double xPoint1 = x * xScale + PAD;
+            double yPoint1 = height - (values.get(x) * yScale + PAD);
+            double xPoint2 = (x + 1) * xScale + PAD;
+            double yPoint2 = height - (values.get(x + 1) * yScale + PAD);
+            g2.draw(new Line2D.Double(xPoint1, yPoint1 ,xPoint2, yPoint2));
+        }
+        g.setColor(Color.BLACK);
     }
-
-    public static void main(String[] args) {
-        ArrayList<Double> list = new ArrayList<>();
-        list.add(20.0);
-        list.add(40.0);
-        list.add(60.0);
-        list.add(10.0);
-        list.add(100.0);
-        Graph g = new Graph(400, 400, list);
+    //setSize(), setBackgroundColor() inherited
+    
+    public static void showGraph(ArrayList<Double> data) {
+        JFrame f = new JFrame();
+        f.getContentPane().add(new Graph(data));
+        f.setSize(400,400);
+        f.setLocation(200,200);
+        f.setVisible(true);
     }
-
 }
