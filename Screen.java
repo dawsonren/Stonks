@@ -8,9 +8,11 @@ import java.util.*;
 public class Screen extends JFrame implements ActionListener
 {
     private static DecimalFormat two = new DecimalFormat ("0.00");
+    private final String spacer = "    ";
     
     //these are the buttons for stocks
-    private JButton s1, s2, s3, s4, s5, newDay; 
+    private JButton[] stockButtons = new JButton[5];
+    private JButton newDay; 
     
     //m1 is overview, m2 is buy, m3 is sell, m4 is help
     private JMenuItem m1, m2, m3, m4;
@@ -165,27 +167,27 @@ public class Screen extends JFrame implements ActionListener
 
         
         //stock buttons, graphs
-        if(e.getSource()==s1)
+        if(e.getSource()==stockButtons[0])
         {
             stockSelected=stocks[0];
             Graph.showGraph(stocks[0].values());
         }
-        else if(e.getSource()==s2)
+        else if(e.getSource()==stockButtons[1])
         {
             stockSelected=stocks[1];
             Graph.showGraph(stocks[1].values());
         }
-        else if(e.getSource()==s3)
+        else if(e.getSource()==stockButtons[2])
         {
             stockSelected=stocks[2];
             Graph.showGraph(stocks[2].values());
         }
-        else if(e.getSource()==s4)
+        else if(e.getSource()==stockButtons[3])
         {
             stockSelected=stocks[3];
             Graph.showGraph(stocks[3].values());
         }
-        else if(e.getSource()==s5)
+        else if(e.getSource()==stockButtons[4])
         {
             stockSelected=stocks[4];
             Graph.showGraph(stocks[4].values());
@@ -214,31 +216,31 @@ public class Screen extends JFrame implements ActionListener
     //sets name to button, and adds button to p1
     public void setStockList()
     {
-        s1=new JButton("      " + stocks[0].getName() + "      ");
-        s1.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        s1.addActionListener(this);
+        stockButtons[0]=new JButton(spacer + stocks[0].getName() + spacer + "0.00%");
+        stockButtons[0].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        stockButtons[0].addActionListener(this);
 
-        s2=new JButton("      " + stocks[1].getName() + "      ");
-        s2.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        s2.addActionListener(this);
+        stockButtons[1]=new JButton(spacer + stocks[1].getName() + spacer + "0.00%");
+        stockButtons[1].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        stockButtons[1].addActionListener(this);
 
-        s3=new JButton("      " + stocks[2].getName() + "      ");
-        s3.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        s3.addActionListener(this);
+        stockButtons[2]=new JButton(spacer + stocks[2].getName() + spacer + "0.00%");
+        stockButtons[2].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        stockButtons[2].addActionListener(this);
 
-        s4=new JButton("      " + stocks[3].getName() + "      ");
-        s4.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        s4.addActionListener(this);
+        stockButtons[3]=new JButton(spacer + stocks[3].getName() + spacer + "0.00%");
+        stockButtons[3].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        stockButtons[3].addActionListener(this);
 
-        s5=new JButton("      " + stocks[4].getName() + "      ");
-        s5.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        s5.addActionListener(this);
+        stockButtons[4]=new JButton(spacer + stocks[4].getName() + spacer + "0.00%");
+        stockButtons[4].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        stockButtons[4].addActionListener(this);
 
-        p1.add(s1);
-        p1.add(s2);
-        p1.add(s3);
-        p1.add(s4);
-        p1.add(s5);
+        p1.add(stockButtons[0]);
+        p1.add(stockButtons[1]);
+        p1.add(stockButtons[2]);
+        p1.add(stockButtons[3]);
+        p1.add(stockButtons[4]);
     }
 
     public void updateMoneyEarned()
@@ -248,14 +250,22 @@ public class Screen extends JFrame implements ActionListener
 
     public void updateTime()
     {
-        for (Stock s : stocks) {
-            s.nextDay();
+        for (int x = 0; x < stocks.length; x++) {
+            double change = stocks[x].nextDay();
+            if (change >= 0) {
+                stockButtons[x].setForeground(new Color(0, 153, 0));
+                stockButtons[x].setText(spacer + stocks[x].getName() + spacer + "+" + two.format(change) + "%");
+            } else {
+                stockButtons[x].setForeground(Color.RED);
+                stockButtons[x].setText(spacer + stocks[x].getName() + spacer + two.format(change) + "%");
+            }
+            
+            
         }
         day++;
         update();
-        System.out.println(day);
     }
-
+    
     public static void main (String [] args)
     {
         Screen go = new Screen();
