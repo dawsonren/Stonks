@@ -1,3 +1,7 @@
+//TODO: Handle any number of stocks? Maybe a final int of numStocks and then not declaring
+//the Stock objects as individual variables but just instantiating them into the stocks[] array
+//TODO: Handle why the array of p2 isn't working
+
 //Creates GUI
 import javax.swing.*;
 import java.awt.*;
@@ -10,9 +14,13 @@ public class Screen extends JFrame implements ActionListener
     private static DecimalFormat two = new DecimalFormat ("0.00");
     private final String spacer = "    ";
     
+    //overall window container
+    Container win;
+    
     //these are the buttons for stocks
     private JButton[] stockButtons = new JButton[5];
-    private JButton newDay; 
+    private JButton[] graphButtons = new JButton[5];
+    private JButton newDay;
     
     //m1 is overview, m2 is buy, m3 is sell, m4 is help
     private JMenuItem m1, m2, m3, m4;
@@ -22,8 +30,8 @@ public class Screen extends JFrame implements ActionListener
     
     //JPanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
     JPanel p1 = new JPanel();
-    //p2 will contain individual information screens for the 
-    JPanel p2 = new JPanel();
+    //p2 will contain individual information screens for the number of stocks
+    JPanel[] p2 = new JPanel[5];
     JPanel p3 = new JPanel();
     
     //these are the stocks that the person can look at, will change with time (hopefully)
@@ -45,7 +53,7 @@ public class Screen extends JFrame implements ActionListener
         
         //set window
 
-        Container win = getContentPane();
+        win = getContentPane();
         win.setLayout(new BorderLayout());
 
         //initialize stocks
@@ -55,12 +63,8 @@ public class Screen extends JFrame implements ActionListener
         p1.setLayout(new GridLayout(5,1));
         
         
-        p2.setLayout(new GridLayout(4,1));
         p3.setLayout(new GridLayout(1,5));
         
-        //the information that's in p2
-        info = new JLabel("");
-        p2.add(info);
 
         //menu for what screen the player is looking at (overview, buy, sell, help)
         JMenuBar bar = new JMenuBar();
@@ -117,7 +121,6 @@ public class Screen extends JFrame implements ActionListener
         graph = new JLabel(" ");
         
         win.add(p1, BorderLayout.WEST);
-        win.add(p2, BorderLayout.EAST);
         win.add(p3, BorderLayout.SOUTH);
         win.add(graph, BorderLayout.CENTER);
 
@@ -152,10 +155,9 @@ public class Screen extends JFrame implements ActionListener
                 int confirm = JOptionPane.showConfirmDialog(null, "Confirm", "Are you sure?", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     double cost = stocks[chooseStock.getSelectedIndex()].getPrice() * (Integer.parseInt(numShares.getText()));
-                    System.out.println(stocks[chooseStock.getSelectedIndex()].getPrice());
-                    System.out.println(Integer.parseInt(numShares.getText()));
                     sv += cost;
                     c -= cost;
+                    nw = sv + c;
                 }
             }
             update();
@@ -164,36 +166,22 @@ public class Screen extends JFrame implements ActionListener
         } else if (e.getSource() == m4) {
             
         }
-
         
         //stock buttons, graphs
-        if(e.getSource()==stockButtons[0])
-        {
-            stockSelected=stocks[0];
-            Graph.showGraph(stocks[0].values());
-        }
-        else if(e.getSource()==stockButtons[1])
-        {
-            stockSelected=stocks[1];
-            Graph.showGraph(stocks[1].values());
-        }
-        else if(e.getSource()==stockButtons[2])
-        {
-            stockSelected=stocks[2];
-            Graph.showGraph(stocks[2].values());
-        }
-        else if(e.getSource()==stockButtons[3])
-        {
-            stockSelected=stocks[3];
-            Graph.showGraph(stocks[3].values());
-        }
-        else if(e.getSource()==stockButtons[4])
-        {
-            stockSelected=stocks[4];
-            Graph.showGraph(stocks[4].values());
+        for (int x = 0; x < stockButtons.length; x++) {
+            if (e.getSource() == stockButtons[x]) {
+                //why doesn't this update the container?
+                win.add(p2[x], BorderLayout.EAST);
+            }
         }
         
-        //next day button
+        for (int x = 0; x < graphButtons.length; x++) {
+            if (e.getSource() == graphButtons[x]) {
+                Graph.showGraph(stocks[x].values());
+            }
+        }
+        
+       //next day button
         
         if (e.getSource()==newDay) {
             updateTime();
@@ -211,36 +199,27 @@ public class Screen extends JFrame implements ActionListener
         stocks[3] = new Stock("Nintendo");
         stocks[4] = new Stock("PlayStation");
         setStockList();
+        setStockInfo();
     }
 
     //sets name to button, and adds button to p1
     public void setStockList()
     {
-        stockButtons[0]=new JButton(spacer + stocks[0].getName() + spacer + "0.00%");
-        stockButtons[0].setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        stockButtons[0].addActionListener(this);
-
-        stockButtons[1]=new JButton(spacer + stocks[1].getName() + spacer + "0.00%");
-        stockButtons[1].setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        stockButtons[1].addActionListener(this);
-
-        stockButtons[2]=new JButton(spacer + stocks[2].getName() + spacer + "0.00%");
-        stockButtons[2].setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        stockButtons[2].addActionListener(this);
-
-        stockButtons[3]=new JButton(spacer + stocks[3].getName() + spacer + "0.00%");
-        stockButtons[3].setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        stockButtons[3].addActionListener(this);
-
-        stockButtons[4]=new JButton(spacer + stocks[4].getName() + spacer + "0.00%");
-        stockButtons[4].setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        stockButtons[4].addActionListener(this);
-
-        p1.add(stockButtons[0]);
-        p1.add(stockButtons[1]);
-        p1.add(stockButtons[2]);
-        p1.add(stockButtons[3]);
-        p1.add(stockButtons[4]);
+        for (int x = 0; x < stockButtons.length; x++) {
+            stockButtons[x]=new JButton(spacer + stocks[x].getName() + spacer + "0.00%");
+            stockButtons[x].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+            stockButtons[x].addActionListener(this);
+            p1.add(stockButtons[x]);
+        }
+    }
+    
+    public void setStockInfo() {
+        for (int x = 0; x < p2.length; x++) {
+            p2[x] = new JPanel();
+            graphButtons[x] = new JButton("Click to See Graph for " + stocks[x].getName());
+            graphButtons[x].addActionListener(this);
+            p2[x].add(graphButtons[x]);
+        }
     }
 
     public void updateMoneyEarned()
@@ -259,8 +238,6 @@ public class Screen extends JFrame implements ActionListener
                 stockButtons[x].setForeground(Color.RED);
                 stockButtons[x].setText(spacer + stocks[x].getName() + spacer + two.format(change) + "%");
             }
-            
-            
         }
         day++;
         update();
@@ -276,7 +253,5 @@ public class Screen extends JFrame implements ActionListener
         stockValue.setText("Stock Value: "+ two.format(sv));
         netWorth.setText("Net Worth: "+ two.format(nw));
         time.setText("                       " + day +" days");
-        
-        
     }
 }
