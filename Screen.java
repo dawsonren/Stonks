@@ -1,6 +1,4 @@
-//TODO: Handle any number of stocks? Maybe a final int of numStocks and then not declaring
-//the Stock objects as individual variables but just instantiating them into the stocks[] array
-//TODO: Handle why the array of p2 isn't working
+//TODO: Handle buy/sell logic
 
 //Creates GUI
 import javax.swing.*;
@@ -14,36 +12,39 @@ public class Screen extends JFrame implements ActionListener
     private static DecimalFormat two = new DecimalFormat ("0.00");
     private final String spacer = "    ";
     
+    private final int totalStocks = 5;
+    private final String[] stockNames = {"Apple", "Microsoft", "Samsung", "Nintendo", "PlayStation"};
+    public final double startingCash = 100000.0;
+    
     //overall window container
     Container win;
     
     //these are the buttons for stocks
-    private JButton[] stockButtons = new JButton[5];
-    private JButton[] graphButtons = new JButton[5];
+    private JButton[] stockButtons = new JButton[totalStocks];
     private JButton newDay;
     
     //m1 is overview, m2 is buy, m3 is sell, m4 is help
     private JMenuItem m1, m2, m3, m4;
     
-    //stockSelected is for further information inside p2
-    private Stock stockSelected;
-    
     //JPanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
     JPanel p1 = new JPanel();
     //p2 will contain individual information screens for the number of stocks
-    JPanel[] p2 = new JPanel[5];
+    JPanel[] p2 = new JPanel[totalStocks];
     JPanel p3 = new JPanel();
     
-    //these are the stocks that the person can look at, will change with time (hopefully)
-    private Stock[] stocks = new Stock[5];
-    private ArrayList<Stock> stocksOwned = new ArrayList<Stock>();
+    //stockSelected is for further information inside p2
+    private JPanel panelSelected;
+    
+    //stocks is used for accessing stock information in general
+    private Stock[] stocks = new Stock[totalStocks];
+    
+    //portfolio is used for managing the portfolio
+    private Portfolio portfolio = new Portfolio(totalStocks, startingCash);
     
     //labels cash, stockvalue, time, and networth go on the bottom. Info controls what's said in p2.
     private JLabel cash, stockValue, netWorth, time, graph, info;
     
     private int day = 0;
-    
-    private double c = 100000, sv = 0, nw = c + sv;
     
     //private Player test = new Player();
     
@@ -62,9 +63,7 @@ public class Screen extends JFrame implements ActionListener
         //set layouts for JPanel
         p1.setLayout(new GridLayout(5,1));
         
-        
         p3.setLayout(new GridLayout(1,5));
-        
 
         //menu for what screen the player is looking at (overview, buy, sell, help)
         JMenuBar bar = new JMenuBar();
@@ -91,16 +90,15 @@ public class Screen extends JFrame implements ActionListener
         setJMenuBar(bar);
         menu.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         win.add(bar, BorderLayout.NORTH);
-
         
         //Bottom of screen (cash, stockValue, netWorth, day and NewDay button)
-        cash = new JLabel("Cash: "+ two.format(c));
+        cash = new JLabel("Cash: "+ two.format(portfolio.getCash()));
         cash.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
-        stockValue = new JLabel("Stock Value: "+ two.format(sv));
+        stockValue = new JLabel("Stock Value: "+ two.format(portfolio.getValue()));
         stockValue.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
-        netWorth = new JLabel("Net Worth: "+ two.format(nw));
+        netWorth = new JLabel("Net Worth: "+ two.format(portfolio.getNetWorth()));
         netWorth.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         
         time= new JLabel("                       " + day +" days");
@@ -116,13 +114,11 @@ public class Screen extends JFrame implements ActionListener
         p3.add(time);
         p3.add(newDay);
         
-        
-        //adding everything to window and sets size
-        graph = new JLabel(" ");
-        
         win.add(p1, BorderLayout.WEST);
         win.add(p3, BorderLayout.SOUTH);
-        win.add(graph, BorderLayout.CENTER);
+        
+        //default page is apple
+        panelSelected = p2[0];
 
         setVisible(true);
         setSize(1000,650);
@@ -131,38 +127,86 @@ public class Screen extends JFrame implements ActionListener
 
     public void actionPerformed (ActionEvent e)
     {
-        //stock selected is the stock most recently clicked on to keep track of which stock we are viewing
         if (e.getSource() == m1) {
             
         } else if(e.getSource() == m2) {
-            ArrayList<String> stockNames = new ArrayList<String>();
-            for (Stock s : stocks) {
-                stockNames.add(s.getName());
-            }
-            
             JTextField numShares = new JTextField(5);
-            JComboBox chooseStock = new JComboBox(stockNames.toArray(new String[0]));
+            JComboBox chooseStock = new JComboBox(stockNames);
+            JLabel errorMessage = new JLabel();
+            
+            boolean again = false;
             
             JPanel myPanel = new JPanel();
             myPanel.add(new JLabel("Buy "));
             myPanel.add(numShares);
             myPanel.add(new JLabel(" shares of "));
             myPanel.add(chooseStock);
+            myPanel.add(errorMessage);
             
-            int result = JOptionPane.showConfirmDialog(null, myPanel, "Buy", JOptionPane.OK_CANCEL_OPTION);
-            
-            if (result == JOptionPane.OK_OPTION) {
-                int confirm = JOptionPane.showConfirmDialog(null, "Confirm", "Are you sure?", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    double cost = stocks[chooseStock.getSelectedIndex()].getPrice() * (Integer.parseInt(numShares.getText()));
-                    sv += cost;
-                    c -= cost;
-                    nw = sv + c;
+            do {
+                int result = JOptionPane.showConfirmDialog(null, myPanel, "Buy", JOptionPane.OK_CANCEL_OPTION);
+                
+                int num = Integer.parseInt(numShares.getText());
+                
+                if (num <= 0) {
+                    errorMessage.setText("Enter a number of shares above 0.");
+                    again = true;
+                } else {
+                    again = false;
                 }
-            }
+                
+                if (result == JOptionPane.OK_OPTION) {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Confirm", "Are you sure?", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        //which stock selected, how many?
+                        //files the information into the portfolio
+                        int stockIndex = chooseStock.getSelectedIndex();
+                        Stock selected = stocks[stockIndex];
+                        
+                        double cost = selected.getPrice(day) * num;
+                            
+                        //adds stock to portfolio
+                        portfolio.addStock(selected, num);
+                    }
+                }
+            } while (again);
+            //updates the statistics on the bottom
             update();
         } else if (e.getSource() == m3) {
+            JTextField numShares = new JTextField(5);
+            //only gets the stocks available in the portfolio
+            JComboBox chooseStock = new JComboBox(portfolio.getStockNames());
             
+            JPanel myPanel = new JPanel();
+            myPanel.add(new JLabel("Sell "));
+            myPanel.add(numShares);
+            myPanel.add(new JLabel(" shares of "));
+            myPanel.add(chooseStock);
+            
+            boolean again = false;
+            
+            //do it again if you are trying to sell more than you have
+            do {
+                int result = JOptionPane.showConfirmDialog(null, myPanel, "Sell", JOptionPane.OK_CANCEL_OPTION);
+                
+                if (result == JOptionPane.OK_OPTION) {
+                    int confirm = JOptionPane.showConfirmDialog(null, "Confirm", "Are you sure?", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        //which stock selected, how many?
+                        //files the information into the portfolio
+                        int stockIndex = chooseStock.getSelectedIndex();
+                        Stock selected = stocks[stockIndex];
+                        int num = Integer.parseInt(numShares.getText());
+                        
+                        double cost = selected.getPrice(day) * num;
+                        
+                        //stockIndex is the same as the stocks, i.e. 0 = Apple, 1 = etc...
+                        again = portfolio.removeStock(selected, num);
+                    }
+                }
+            } while (again);
+            //updates the statistics on the bottom
+            update();
         } else if (e.getSource() == m4) {
             
         }
@@ -170,14 +214,11 @@ public class Screen extends JFrame implements ActionListener
         //stock buttons, graphs
         for (int x = 0; x < stockButtons.length; x++) {
             if (e.getSource() == stockButtons[x]) {
-                //why doesn't this update the container?
+                panelSelected.setVisible(false);
                 win.add(p2[x], BorderLayout.EAST);
-            }
-        }
-        
-        for (int x = 0; x < graphButtons.length; x++) {
-            if (e.getSource() == graphButtons[x]) {
-                Graph.showGraph(stocks[x].values());
+                p2[x].setVisible(true);
+                panelSelected = p2[x];
+                
             }
         }
         
@@ -193,11 +234,9 @@ public class Screen extends JFrame implements ActionListener
     public void getStockList()
     {
         //these are just example names to be replaced later
-        stocks[0] = new Stock("Apple");
-        stocks[1] = new Stock("Microsoft");
-        stocks[2] = new Stock("Samsung");
-        stocks[3] = new Stock("Nintendo");
-        stocks[4] = new Stock("PlayStation");
+        for (int x = 0; x < stocks.length; x++) {
+            stocks[x] = new Stock(stockNames[x]);
+        }
         setStockList();
         setStockInfo();
     }
@@ -206,7 +245,7 @@ public class Screen extends JFrame implements ActionListener
     public void setStockList()
     {
         for (int x = 0; x < stockButtons.length; x++) {
-            stockButtons[x]=new JButton(spacer + stocks[x].getName() + spacer + "0.00%");
+            stockButtons[x] = new JButton(spacer + stocks[x].getName() + spacer + "0.00%");
             stockButtons[x].setFont(new Font("Times New Roman", Font.PLAIN, 18));
             stockButtons[x].addActionListener(this);
             p1.add(stockButtons[x]);
@@ -215,20 +254,13 @@ public class Screen extends JFrame implements ActionListener
     
     public void setStockInfo() {
         for (int x = 0; x < p2.length; x++) {
-            p2[x] = new JPanel();
-            graphButtons[x] = new JButton("Click to See Graph for " + stocks[x].getName());
-            graphButtons[x].addActionListener(this);
-            p2[x].add(graphButtons[x]);
+            p2[x] = new StockInfoContainer(stocks[x]);
         }
-    }
-
-    public void updateMoneyEarned()
-    {
-        
     }
 
     public void updateTime()
     {
+        //controls button colors
         for (int x = 0; x < stocks.length; x++) {
             double change = stocks[x].nextDay();
             if (change >= 0) {
@@ -243,15 +275,11 @@ public class Screen extends JFrame implements ActionListener
         update();
     }
     
-    public static void main (String [] args)
-    {
-        Screen go = new Screen();
-    }
-    
     public void update() {
-        cash.setText("Cash: "+ two.format(c));
-        stockValue.setText("Stock Value: "+ two.format(sv));
-        netWorth.setText("Net Worth: "+ two.format(nw));
+        cash.setText("Cash: "+ two.format(portfolio.getCash()));
+        stockValue.setText("Stock Value: "+ two.format(portfolio.getValue()));
+        netWorth.setText("Net Worth: "+ two.format(portfolio.getNetWorth()));
         time.setText("                       " + day +" days");
+        setStockInfo();
     }
 }
