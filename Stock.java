@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Stock {
   //index = days since start, value = price
-  private ArrayList<Double> values = new ArrayList<>();
+  private ArrayList<Double> values = new ArrayList<Double>();
   private double price;
   private int day = 0;
   private String name;
@@ -75,5 +75,10 @@ public class Stock {
   }
   public ArrayList<Double> values() {
       return values;
+  }
+  public ArrayList<Double> values(int backlog) {
+      //backlog is how far back you want to go
+      List<Double> old_values = values.subList(day - backlog, day);
+      return new ArrayList<Double>(old_values);
   }
 }
