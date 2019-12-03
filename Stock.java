@@ -81,4 +81,7 @@ public class Stock {
       List<Double> old_values = values.subList(day - backlog, day);
       return new ArrayList<Double>(old_values);
   }
+  public int getDay() {
+      return day;
+  }
 }
