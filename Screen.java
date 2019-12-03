@@ -11,6 +11,8 @@ public class Screen extends JFrame implements ActionListener
 {
     private static DecimalFormat two = new DecimalFormat ("0.00");
     private final String spacer = "    ";
+    private final Font tnr18 = new Font("Times New Roman", Font.PLAIN, 18);
+    private final Font tnr20 = new Font("Times New Roman", Font.PLAIN, 20);
     
     private final int totalStocks = 5;
     private final String[] stockNames = {"Apple", "Microsoft", "Samsung", "Nintendo", "PlayStation"};
@@ -46,8 +48,6 @@ public class Screen extends JFrame implements ActionListener
     
     private int day = 0;
     
-    //private Player test = new Player();
-    
     public Screen()
     {
         super("Screen");
@@ -69,16 +69,16 @@ public class Screen extends JFrame implements ActionListener
         JMenuBar bar = new JMenuBar();
         JMenu menu= new JMenu("Menu");
         m1 = new JMenuItem("Overview");
-        m1.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        m1.setFont(tnr18);
         m1.addActionListener(this);
         m2 = new JMenuItem("Buy");
-        m2.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        m2.setFont(tnr18);
         m2.addActionListener(this);
         m3 = new JMenuItem("Sell");
-        m3.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        m3.setFont(tnr18);
         m3.addActionListener(this);
         m4 = new JMenuItem("Help");
-        m4.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        m4.setFont(tnr18);
         m4.addActionListener(this);
         
         //JMenu for swtching what you are seeing
@@ -88,24 +88,24 @@ public class Screen extends JFrame implements ActionListener
         menu.add(m4);
         bar.add(menu);
         setJMenuBar(bar);
-        menu.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        menu.setFont(tnr20);
         win.add(bar, BorderLayout.NORTH);
         
         //Bottom of screen (cash, stockValue, netWorth, day and NewDay button)
         cash = new JLabel("Cash: "+ two.format(portfolio.getCash()));
-        cash.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        cash.setFont(tnr20);
         
         stockValue = new JLabel("Stock Value: "+ two.format(portfolio.getValue()));
-        stockValue.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        stockValue.setFont(tnr20);
         
         netWorth = new JLabel("Net Worth: "+ two.format(portfolio.getNetWorth()));
-        netWorth.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        netWorth.setFont(tnr20);
         
         time= new JLabel("                       " + day +" days");
-        time.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        time.setFont(tnr20);
         
         newDay=new JButton("New Day");
-        newDay.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        newDay.setFont(tnr20);
         newDay.addActionListener(this);
         
         p3.add(cash);
@@ -171,7 +171,7 @@ public class Screen extends JFrame implements ActionListener
                 }
             } while (again);
             //updates the statistics on the bottom
-            update();
+            updateBottomBar();
         } else if (e.getSource() == m3) {
             JTextField numShares = new JTextField(5);
             //only gets the stocks available in the portfolio
@@ -206,19 +206,15 @@ public class Screen extends JFrame implements ActionListener
                 }
             } while (again);
             //updates the statistics on the bottom
-            update();
+            updateBottomBar();
         } else if (e.getSource() == m4) {
             
         }
         
         //stock buttons, graphs
-        for (int x = 0; x < stockButtons.length; x++) {
+        for (int x = 0; x < totalStocks; x++) {
             if (e.getSource() == stockButtons[x]) {
-                panelSelected.setVisible(false);
-                win.add(p2[x], BorderLayout.EAST);
-                p2[x].setVisible(true);
-                panelSelected = p2[x];
-                
+                updateStockInfoPanel();
             }
         }
         
@@ -229,38 +225,33 @@ public class Screen extends JFrame implements ActionListener
         }
     }
 
-    //should give the strings the name of the stock they will hold
-    //then adds buttons to panel
     public void getStockList()
     {
         //these are just example names to be replaced later
-        for (int x = 0; x < stocks.length; x++) {
+        for (int x = 0; x < totalStocks; x++) {
+            //creates stocks
             stocks[x] = new Stock(stockNames[x]);
-        }
-        setStockList();
-        setStockInfo();
-    }
-
-    //sets name to button, and adds button to p1
-    public void setStockList()
-    {
-        for (int x = 0; x < stockButtons.length; x++) {
+            
+            //sets stock buttons
             stockButtons[x] = new JButton(spacer + stocks[x].getName() + spacer + "0.00%");
-            stockButtons[x].setFont(new Font("Times New Roman", Font.PLAIN, 18));
+            stockButtons[x].setFont(tnr18);
             stockButtons[x].addActionListener(this);
+            
+            //adds stock buttons to 
             p1.add(stockButtons[x]);
         }
+        setStockInfo();
     }
     
     public void setStockInfo() {
-        for (int x = 0; x < p2.length; x++) {
+        for (int x = 0; x < totalStocks; x++) {
             p2[x] = new StockInfoContainer(stocks[x]);
         }
     }
 
     public void updateTime()
     {
-        //controls button colors
+        //controls button colors, updates the stock's values
         for (int x = 0; x < stocks.length; x++) {
             double change = stocks[x].nextDay();
             if (change >= 0) {
@@ -272,14 +263,24 @@ public class Screen extends JFrame implements ActionListener
             }
         }
         day++;
-        update();
+        updateBottomBar();
+        updateStockInfoPanel();
     }
     
-    public void update() {
+    public void updateBottomBar() {
         cash.setText("Cash: "+ two.format(portfolio.getCash()));
         stockValue.setText("Stock Value: "+ two.format(portfolio.getValue()));
         netWorth.setText("Net Worth: "+ two.format(portfolio.getNetWorth()));
         time.setText("                       " + day +" days");
         setStockInfo();
+    }
+    
+    public void updateStockInfoPanel() {
+        for (int x = 0; x < totalStocks; x++) {
+            panelSelected.setVisible(false);
+            win.add(p2[x], BorderLayout.EAST);
+            p2[x].setVisible(true);
+            panelSelected = p2[x];
+        }
     }
 }
