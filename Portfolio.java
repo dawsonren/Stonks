@@ -63,7 +63,7 @@ public class Portfolio
     }
     
     public String[] getStockNames() {
-        String[] names = new String[size];
+        String[] names = new String[port.size()];
         int counter = 0;
         for (Stock stock : port.keySet()) {
             names[counter] = stock.getName();
@@ -72,11 +72,22 @@ public class Portfolio
         return names;
     }
     
-    public HashMap<Stock, Integer> getMap() {
-        return port;
+    public Stock[] getStocks() {
+        Stock[] stocks = new Stock[port.size()];
+        int counter = 0;
+        for (Stock stock : port.keySet()) {
+            stocks[counter] = stock;
+            counter++;
+        }
+        return stocks;
     }
     
     public double getNetWorth() {
         return getCash() + getValue();
     }
+    
+    public int stocksOwned() {
+        return port.size();
+    }
 }
+
