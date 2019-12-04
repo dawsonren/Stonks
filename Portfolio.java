@@ -2,9 +2,9 @@ import java.util.HashMap;
 
 public class Portfolio
 {
-    HashMap<Stock, Integer> port;
-    double cash;
-    int size;
+    private HashMap<Stock, Integer> port;
+    private double cash;
+    private int size;
     //size is how many stocks it can hold
     
     public Portfolio(int siz, double funds) {
@@ -70,6 +70,10 @@ public class Portfolio
             counter++;
         }
         return names;
+    }
+    
+    public HashMap<Stock, Integer> getMap() {
+        return port;
     }
     
     public double getNetWorth() {
