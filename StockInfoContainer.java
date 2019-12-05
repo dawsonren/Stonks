@@ -1,3 +1,5 @@
+//TODO: Implement GridBagLayout
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,69 +8,84 @@ import java.awt.event.*;
 
 public class StockInfoContainer extends JPanel implements ActionListener {
     private static DecimalFormat two = new DecimalFormat ("0.00");
+    private final Font TNR18 = new Font("Times New Roman", Font.PLAIN, 18);
     
-    private Graph graph, graphAll, weekView, monthView;
+    private Graph graph, allView, weekView, monthView;
     private JLabel price;
     private JButton week, month,all;
     private JPanel extras;
     public StockInfoContainer(Stock s) {
         super();
+        //GridBagConstraints c = new GridBagConstraints();
+        
+        
         int valueSize = s.values().size();
-        //add graph
-        graphAll = new Graph(s.values());
-        graphAll.setPreferredSize(new Dimension(475,430));
         
-        extras = new JPanel();
-        extras.setLayout(new GridLayout(4,2,0,3));
+        //add graphs
+        allView = new Graph(s.values());
+        allView.setPreferredSize(new Dimension(400, 400));
         
-        graph = graphAll;
-        add(graph);
-        
-        //add price
-        JLabel price = new JLabel("  Current Stock Price: " + two.format(s.getCurrentPrice()));
-        price.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        extras.add(price);
-        week= new JButton ("See past week");
-        week.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        month= new JButton ("See past month");
-        month.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        all=new JButton ("See all time");
-        all.setFont(new Font("Times New Roman", Font.PLAIN, 18));
-        if(valueSize>0)
-        {
-            if(valueSize<7)
-                weekView=new Graph(s.values(valueSize-1));
+        if(valueSize>0) {
+            if(valueSize<=7)
+                weekView=new Graph(s.values(valueSize - 1));
             else
                 weekView = new Graph(s.values(7));
-        
-            if(valueSize<30)
+            if(valueSize<=30)
                 monthView= new Graph(s.values(valueSize-1));
             else
                 monthView = new Graph(s.values(30));
-        
-            weekView.setPreferredSize(new Dimension(400,400));
-            extras.add(week);
-            week.addActionListener(this);
-        
-            monthView.setPreferredSize(new Dimension(400,400));
-            extras.add(month);
-            month.addActionListener(this);
-            
-            extras.add(all);
-            all.addActionListener(this);
-            
-            add(extras);
+            weekView.setPreferredSize(new Dimension(400, 400));
+            monthView.setPreferredSize(new Dimension(400, 400));
         }
+
+        extras = new JPanel();
+        extras.setLayout(new GridLayout(4,2,0,3));
+
+        //add price label, three buttons
+        JLabel price = new JLabel("  Current Stock Price: " + two.format(s.getCurrentPrice()));
+        price.setFont(TNR18);
+        week= new JButton ("See past week");
+        week.setFont(TNR18);
+        week.addActionListener(this);
+        month= new JButton ("See past month");
+        month.setFont(TNR18);
+        month.addActionListener(this);
+        all=new JButton ("See all time");
+        all.setFont(TNR18);
+        all.addActionListener(this);
+        
+        extras.add(all);
+        extras.add(month);
+        extras.add(week);
+        
+        add(extras);
+        
+        //default graph is allView
+        graph = allView;
+        add(graph);
+        add(new JLabel(s.getName()));
     }
     
     public void actionPerformed (ActionEvent e)
     {
-        if(e.getSource()==week)
-            graph=weekView;
-        if(e.getSource()==month)
-            graph=monthView;
-        if(e.getSource()==all)
-            graph=graphAll;
-        repaint();
+        //swap components
+        if(e.getSource()==week) {
+            graph.setVisible(false);
+            add(weekView);
+            graph = weekView;
+            graph.setVisible(true);
+        }
+        if(e.getSource()==month) {
+            graph.setVisible(false);
+            add(monthView);
+            graph = monthView;
+            graph.setVisible(true);
+        }
+        if(e.getSource()==all) {
+            graph.setVisible(false);
+            add(allView);
+            graph = allView;
+            graph.setVisible(true);
+        }
     }
 }
