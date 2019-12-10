@@ -12,8 +12,11 @@ public class BuySellFrame extends JFrame implements ActionListener
     private JLabel errorMessage;
     
     private Stock[] stocks = Stock_Simulator_2000.go.stocks;
+    private Stock[] portStocks = Stock_Simulator_2000.go.portfolio.getStocks();
+    
     private String[] stockNames = Stock_Simulator_2000.go.stockNames;
-    private String[] portStocks = Stock_Simulator_2000.go.portfolio.getStockNames();
+    private String[] portStockNames = Stock_Simulator_2000.go.portfolio.getStockNames();
+    
     private int day = Stock_Simulator_2000.go.day;
     private Portfolio portfolio = Stock_Simulator_2000.go.portfolio;
     
@@ -43,7 +46,7 @@ public class BuySellFrame extends JFrame implements ActionListener
         
         //setting up hashtable to change with buy/sell
         changeBuySell.put(options[1], stockNames);
-        changeBuySell.put(options[2], portStocks);
+        changeBuySell.put(options[2], portStockNames);
         
         //enter and error message
         enter = new JButton("Enter");
@@ -73,17 +76,20 @@ public class BuySellFrame extends JFrame implements ActionListener
                 errorMessage.setText("Please enter a correct number of shares.");
                 return;
             }
-            
+
             int stockIndex = chooseStock.getSelectedIndex();
-            Stock selected = stocks[stockIndex];
             
             //control buy/sell
             if (buySell.getSelectedItem().equals("Buy")) {
+                Stock selected = stocks[stockIndex];
+                System.out.println("buy " + selected.getName());
                 //adds stock to portfolio, portfolio handles cash exchange
                 portfolio.addStock(selected, Integer.parseInt(shares));
                 Stock_Simulator_2000.go.updateBottomBar();
                 setVisible(false);
             } else {
+                Stock selected = portStocks[stockIndex];
+                System.out.println("sell " + selected.getName());
                 //removes stock, returns false if not possible
                 boolean possible = portfolio.removeStock(selected, Integer.parseInt(shares));
                 if (!possible) {
