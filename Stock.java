@@ -9,7 +9,11 @@ public class Stock {
   //volatility is a multiplier, where the change of price is given by:
   //change in price = volatility x (random number between 0.0 and 1.0)
   private Random rd = new Random();
-  private final int function = rd.nextInt(5);
+  private final int function;
+  private final int volatility;
+  
+  //trend30 represents a 10-day trend
+  private double trend20;
   
   //Volatility can be changed by passing the nextDouble() through "function", which is determined
   //randomly.
@@ -22,20 +26,39 @@ public class Stock {
     //price will be between $15 and $200
     price = rd.nextInt(186) + 15;
     values.add(day, price);
+    function = rd.nextInt(5);
+    //volatility is a number between 10 (10% change between days) 
+    //and 33 (3% change between days)
+    volatility = (rd.nextInt(24) + 10);
+    
+    trend20 = price * rd.nextDouble() / 100;
   }
   public double nextDay() {
-    //volatility must be calculated before bumping day
-    double volatility = getCurrentPrice() / 10;
+    //scaledVolatility must be calculated before bumping day
+    //scaledVolatility is scaled to current price
+    double scaledVolatility = getCurrentPrice() / volatility;
+    
+    //change the slope and sign of trend
+    if (day % 20 == 0) {
+        //% change in price, if current is smaller then trend will be +, vice versa
+        double percentChange = (getFirstPrice() - getCurrentPrice()) / getFirstPrice();
+        //trend 20 is scaled to current price, at most 1% change
+        trend20 = percentChange * getCurrentPrice() / 100;
+        System.out.println(getName() + " delta: " + (getFirstPrice() - getCurrentPrice()));
+        System.out.println(getName() + " %: " + percentChange);
+        System.out.println(getName() + " trend: " + trend20);
+    }
+    price += trend20;
     
     day++;
-    
+
     //highlow controls whether it's going to up or down
     //highlow = 0 means down, highlow = 1 means up
     int highlow = rd.nextInt(2);
     if (highlow == 0) {
-      price -= functionize(rd.nextDouble()) * volatility;
+      price -= functionize(rd.nextDouble()) * scaledVolatility;
     } else {
-      price += functionize(rd.nextDouble()) * volatility;
+      price += functionize(rd.nextDouble()) * scaledVolatility;
     }
     values.add(day, price);
     
@@ -61,7 +84,7 @@ public class Stock {
       return given;
   }
   public double getFirstPrice() {
-    return price;
+    return values.get(0);
   }
   public double getPrice(int d) {
     return values.get(d);
@@ -78,7 +101,7 @@ public class Stock {
   }
   public ArrayList<Double> values(int backlog) {
       //backlog is how far back you want to go
-      List<Double> old_values = values.subList(day - backlog, day);
+      List<Double> old_values = values.subList(day - backlog, day + 1);
       return new ArrayList<Double>(old_values);
   }
   public int getDay() {
