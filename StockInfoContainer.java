@@ -16,30 +16,30 @@ public class StockInfoContainer extends JPanel implements ActionListener {
     private JPanel extras;
     public StockInfoContainer(Stock s) {
         super();
-        //GridBagConstraints c = new GridBagConstraints();
-        
         
         int valueSize = s.values().size();
         
         //add graphs
-        allView = new Graph(s.values());
-        allView.setPreferredSize(new Dimension(400, 400));
+        allView = new Graph(s);
+        allView.setPreferredSize(new Dimension(650, 650));
         
         if(valueSize>0) {
-            if(valueSize<=7)
-                weekView=new Graph(s.values(valueSize - 1));
-            else
-                weekView = new Graph(s.values(7));
-            if(valueSize<=30)
-                monthView= new Graph(s.values(valueSize-1));
-            else
-                monthView = new Graph(s.values(30));
-            weekView.setPreferredSize(new Dimension(400, 400));
-            monthView.setPreferredSize(new Dimension(400, 400));
+            if(valueSize<=7) {
+                weekView=new Graph(s, valueSize - 1);
+            } else {
+                weekView = new Graph(s, 7);
+            }
+            if(valueSize<=30) {
+                monthView= new Graph(s, valueSize - 1);
+            } else {
+                monthView = new Graph(s, 30);
+            }
+            weekView.setPreferredSize(new Dimension(650, 650));
+            monthView.setPreferredSize(new Dimension(650, 650));
         }
 
         extras = new JPanel();
-        extras.setLayout(new GridLayout(4,2,0,3));
+        extras.setLayout(new GridLayout(4,1,0,3));
 
         //add price label, three buttons
         JLabel price = new JLabel("  Current Stock Price: " + two.format(s.getCurrentPrice()));
@@ -58,12 +58,14 @@ public class StockInfoContainer extends JPanel implements ActionListener {
         extras.add(month);
         extras.add(week);
         
+        //current price add
+        extras.add(new JLabel("Current Price: " + two.format(s.getCurrentPrice())));
+        
         add(extras);
         
-        //default graph is allView
+        //default graph is allView, add graph
         graph = allView;
         add(graph);
-        add(new JLabel(s.getName()));
     }
     
     public void actionPerformed (ActionEvent e)
