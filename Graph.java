@@ -12,9 +12,16 @@ public class Graph extends JPanel {
     final int axisThickness = 3;
     //xpos and ypos are offset values because it fits within a larger JFrame
     private ArrayList<Double> values;
+    private String name;
     private Color color = Color.WHITE;
-    public Graph(ArrayList<Double> v) {
-        values = v;
+    public Graph(Stock s) {
+        values = s.values();
+        name = s.getName();
+        setBackground(color);
+    }
+    public Graph (Stock s, int backlog) {
+        values = s.values(backlog);
+        name = s.getName();
         setBackground(color);
     }
     public void paintComponent(Graphics g) {
@@ -54,6 +61,9 @@ public class Graph extends JPanel {
             
             //labels highest historical price
             g2.drawString(two.format(y_max), 5, PAD);
+            
+            //labels name of stock
+            g2.drawString(name, width / 2 - PAD, PAD / 2);
             
             //labels 0
             g2.drawString(" 0.00", 5, height - PAD);
