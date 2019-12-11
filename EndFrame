@@ -1,0 +1,60 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+
+public class EndFrame extends JFrame implements ActionListener 
+{
+    private JLabel playAgain;
+    private JButton yes;
+    private JButton no;
+    private JLabel message;
+    public EndFrame(Portfolio portfolio) {
+        super();
+        
+        Container win = getContentPane();
+        JPanel content = new JPanel();
+        
+        if (portfolio.getValue() >= 20000.0) {
+            this.setTitle("You Win!");
+            
+            message = new JLabel("You've evaded the dreaded SEC! Go buy yourself something nice...and don't rip off investors!");
+            content.add(message);
+        } else {
+            this.setTitle("You Lose!");
+            
+            message = new JLabel("You've been caught by the SEC...see you in court! Don't rip off investors!");
+            content.add(message);
+        }
+        
+        JLabel playAgain = new JLabel("Play Again?");
+        content.add(playAgain);
+        
+        yes = new JButton("Yes");
+        yes.addActionListener(this);
+        no = new JButton("No");
+        no.addActionListener(this);
+        content.add(yes);
+        content.add(no);
+        
+        win.add(content);
+        
+        setSize(500, 150);
+        setVisible(true);
+    }
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == no) {
+            System.exit(0);
+            
+            setVisible(false);
+            dispose();
+        } else if (source == yes) {
+            Stock_Simulator_2000.go.dispose();
+            Stock_Simulator_2000.main(new String[1]);
+            
+            setVisible(false);
+            dispose();
+        }
+    }
+}
