@@ -42,7 +42,7 @@ public class StockInfoContainer extends JPanel implements ActionListener {
         extras.setLayout(new GridLayout(4,1,0,3));
 
         //add price label, three buttons
-        JLabel price = new JLabel("  Current Stock Price: " + two.format(s.getCurrentPrice()));
+        JLabel price = new JLabel("Current Stock Price: $" + two.format(s.getCurrentPrice()));
         price.setFont(TNR18);
         week= new JButton ("See past week");
         week.setFont(TNR18);
@@ -54,12 +54,11 @@ public class StockInfoContainer extends JPanel implements ActionListener {
         all.setFont(TNR18);
         all.addActionListener(this);
         
+        extras.add(price);
         extras.add(all);
         extras.add(month);
         extras.add(week);
         
-        //current price add
-        extras.add(new JLabel("Current Price: " + two.format(s.getCurrentPrice())));
         
         add(extras);
         
