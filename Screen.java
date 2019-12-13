@@ -10,6 +10,7 @@ public class Screen extends JFrame implements ActionListener
     private final String SPACER = "    ";
     private final Font SMALL_FONT = new Font("Times New Roman", Font.PLAIN, 18);
     private final Font BIG_FONT = new Font("Times New Roman", Font.PLAIN, 20);
+    private final Font HEADINGS = new Font("Times New Roman", Font.BOLD, 22);
     
     private final int totalStocks = 5;
     public final String[] stockNames = {"Apple", "Microsoft", "Samsung", "Nintendo", "PlayStation"};
@@ -31,6 +32,8 @@ public class Screen extends JFrame implements ActionListener
     JPanel[] p2 = new JPanel[totalStocks];
     JPanel p3 = new JPanel();
     
+    JFrame helpFrame = new JFrame();
+    
     //infoScreen is for further information inside p2
     private JPanel infoScreen;
     private int stockIndexSelected;
@@ -45,6 +48,8 @@ public class Screen extends JFrame implements ActionListener
     private JLabel cash, stockValue, netWorth, time, graph, info;
     
     public int day = 0;
+    
+    JMenuBar bar;
     
     public Screen()
     {
@@ -77,7 +82,7 @@ public class Screen extends JFrame implements ActionListener
         newDay=new JButton("New Day");
         
         //menu for what screen the player is looking at (overview, buy, sell, help)
-        JMenuBar bar = new JMenuBar();
+        bar = new JMenuBar();
         JMenu menu= new JMenu("Menu");
         m1 = new JMenuItem("Overview");
         m1.setFont(SMALL_FONT);
@@ -85,7 +90,7 @@ public class Screen extends JFrame implements ActionListener
         m2 = new JMenuItem("Buy and Sell");
         m2.setFont(SMALL_FONT);
         m2.addActionListener(this);
-        m3 = new JMenuItem("Info");
+        m3 = new JMenuItem("Help");
         m3.setFont(SMALL_FONT);
         m3.addActionListener(this);
 
@@ -125,11 +130,17 @@ public class Screen extends JFrame implements ActionListener
     public void actionPerformed (ActionEvent e)
     {
         if (e.getSource() == m1) {
-            
+            win.setVisible(false);
+            win.add(bar,BorderLayout.NORTH);
+            win.add(p1,BorderLayout.WEST);
+            win.add(p3, BorderLayout.SOUTH);
+            win.setVisible(true);
         } else if(e.getSource() == m2) {
             BuySellFrame frame = new BuySellFrame();
         } else if (e.getSource() == m3) {
-            
+            HelpPopUp();
+            helpFrame.setVisible(true);
+            helpFrame.setSize(1440,800);
         }
         
         //changes out the current viewable p2, or stock information when press
@@ -227,5 +238,35 @@ public class Screen extends JFrame implements ActionListener
         home.add(stockScreen);
         
         return home;
+    }
+    
+    public void HelpPopUp()
+    {
+        helpFrame = new JFrame("How to Play");
+        helpFrame.setLayout(new BoxLayout(helpFrame,BoxLayout.Y_AXIS));
+        JLabel storyline;
+        JTextArea stock;
+        JLabel BuySell;
+        String stockInfo;
+        JLabel Title2= new JLabel("View Stocks"), Title1= new JLabel("Game View and Basics"),Title3= new JLabel("How to Buy/Sell");
+   
+        stockInfo="•The 5 buttons on the left side of the screen are for 5 stocks. \n•Click on a stock name to see it's value over all time.";
+        stockInfo+="If you would like to view weekly or monthy simply click \"See past month\" or \"See past week\" \n•This screen also displays the current stock price (the cost of 1 share)";
+        stockInfo+="\n•When you hit next day, it will default back to your portfolio until you select a stock. Your portfolio displays the number of shared of each stock you own.";
+        stockInfo+="\n•In addition, when you hit next day next to stock names you will see the percent increase or decrease of value from yesterday.";
+        
+        stock = new JTextArea(1440,800);
+        stock.setText(stockInfo);
+        stock.setLineWrap(true);
+        stock.setFont(SMALL_FONT);
+        
+        Title1.setFont(HEADINGS);
+        Title2.setFont(HEADINGS);
+        Title3.setFont(HEADINGS);
+        
+        helpFrame.add(Title1);
+        helpFrame.add(Title2);
+        helpFrame.add(stock);
+        helpFrame.add(Title3);
     }
 }
