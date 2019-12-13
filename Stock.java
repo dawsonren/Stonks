@@ -107,4 +107,11 @@ public class Stock {
   public int getDay() {
       return day;
   }
+  public String toString() {
+    String str = name + ",";
+    for (int x = 0; x < values.size(); x++) {
+        str += values.get(x)+ "," ;
+    }
+    return str;
+  }
 }
