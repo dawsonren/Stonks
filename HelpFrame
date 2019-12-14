@@ -1,0 +1,108 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.DecimalFormat;
+import java.util.*;
+
+public class HelpFrame extends JFrame
+{
+    JLabel sInfo1,sInfo2,sInfo3,sInfo4,sInfo5,sInfo6;
+    JLabel story1, story2, story3, story4;
+    JLabel bas1, bas2, bas3,bas4,bas5,bas6;
+    JLabel basic1, basic2, basic3, basic4, basic5;
+    JLabel Title2= new JLabel("View Stocks"), Title1= new JLabel("Game View and Basics"),Title3= new JLabel("How to Buy/Sell");
+    private final Font SMALL_FONT = new Font("Times New Roman", Font.PLAIN, 18);
+    private final Font BIG_FONT = new Font("Times New Roman", Font.PLAIN, 20);
+    private final Font HEADINGS = new Font("Times New Roman", Font.BOLD, 22);
+    
+    public HelpFrame()
+    {
+        new JFrame("How to Play");
+        setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+        
+        Story();
+        Basics();
+        StockInfo();
+        BuyAndSell();
+        
+        Title1.setFont(HEADINGS);
+        Title2.setFont(HEADINGS);
+        Title3.setFont(HEADINGS);
+        
+        add(story1);
+        add(story2);
+        add(story3);
+        add(story4);
+        
+        add(Title1);
+        add(basic1);
+        add(basic2);
+        add(basic5);
+        
+        add(Title2);
+        add(sInfo2);
+        add(sInfo3);
+        add(sInfo4);
+        add(sInfo6);
+        
+        add(Title3);
+        add(bas1);
+        add(bas2);
+        add(bas3);
+        add(bas4);
+        
+        setVisible(true);
+        setSize(1440,800);
+    }
+    
+    public void Story ()
+    {
+         story1=new JLabel("You're a \"Wall Street\" broker, and you've fradulently promised that you'd be able to double the amount of money invested within 100 days...");
+        story2=new JLabel("Unforunately, your computer science degree has left you ill-prepared to deal with the fast-paced changes of a volatile stock market.");
+        story3=new JLabel("You decide to forgo the penny stocks and just invest in the blue chip stocks.");
+        story4=new JLabel("Will you be able to pay your clients? Or, will you break the bank and be prosecuted by the SEC?");
+        
+        story1.setFont(SMALL_FONT);
+        story2.setFont(SMALL_FONT);
+        story3.setFont(SMALL_FONT);
+        story4.setFont(SMALL_FONT);
+    }
+    
+    public void Basics()
+    {
+        basic1= new JLabel("•The 5 buttons on the left side of the screen are for 5 stocks");
+        basic2= new JLabel("•Your portfolio is on the right side of the screen, Your portfolio displays the number of shared of each stock you own.");
+        basic3= new JLabel("uhhh");
+        basic5= new JLabel("•When you hit next day, it will default back to your portfolio until you select a stock.");
+        
+        basic1.setFont(SMALL_FONT);
+        basic2.setFont(SMALL_FONT);
+        basic5.setFont(SMALL_FONT);
+    }
+    
+    public void StockInfo ()
+    {
+        sInfo2=new JLabel("•Click on a stock name to see it's value over all time.");
+        sInfo3=new JLabel("•If you would like to view weekly or monthy simply click \"See past month\" or \"See past week\"");
+        sInfo4=new JLabel("•This screen also displays the current stock price (the cost of 1 share)");
+        sInfo6=new JLabel("•In addition, when you hit next day next to stock names you will see the percent increase or decrease of value from yesterday.");
+    
+        sInfo2.setFont(SMALL_FONT);
+        sInfo3.setFont(SMALL_FONT);
+        sInfo4.setFont(SMALL_FONT);
+        sInfo6.setFont(SMALL_FONT);
+    }
+    
+    public void BuyAndSell()
+    {
+        bas1=new JLabel("In order to buy or sell shares, click the menu in the top left corner that says \"Menu\" when you are on the default page");
+        bas2=new JLabel("A window will pop up on your screen. On the first drop down menu, select either buy or sell");
+        bas3=new JLabel("In the space, type in how many shares you would like to buy/sell, then in the second drop down, select what stock you would like to buy or sell");
+        bas4= new JLabel("Hit enter. If it says \"Operation not possible\", it is either because you have insufficient funds for buying, or you are trying to sell more shares of a stock than you currently own.");
+        
+        bas1.setFont(SMALL_FONT);
+        bas2.setFont(SMALL_FONT);
+        bas3.setFont(SMALL_FONT);
+        bas4.setFont(SMALL_FONT);
+    }
+}
