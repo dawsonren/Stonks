@@ -125,6 +125,7 @@ public class Screen extends JFrame implements ActionListener
 
         setVisible(true);
         setSize(1440,800);
+        FirstPopUp();
     }
 
     public void actionPerformed (ActionEvent e)
@@ -242,31 +243,22 @@ public class Screen extends JFrame implements ActionListener
     
     public void HelpPopUp()
     {
-        helpFrame = new JFrame("How to Play");
-        helpFrame.setLayout(new BoxLayout(helpFrame,BoxLayout.Y_AXIS));
-        JLabel storyline;
-        JTextArea stock;
-        JLabel BuySell;
-        String stockInfo;
-        JLabel Title2= new JLabel("View Stocks"), Title1= new JLabel("Game View and Basics"),Title3= new JLabel("How to Buy/Sell");
-   
-        stockInfo="•The 5 buttons on the left side of the screen are for 5 stocks. \n•Click on a stock name to see it's value over all time.";
-        stockInfo+="If you would like to view weekly or monthy simply click \"See past month\" or \"See past week\" \n•This screen also displays the current stock price (the cost of 1 share)";
-        stockInfo+="\n•When you hit next day, it will default back to your portfolio until you select a stock. Your portfolio displays the number of shared of each stock you own.";
-        stockInfo+="\n•In addition, when you hit next day next to stock names you will see the percent increase or decrease of value from yesterday.";
+       HelpFrame help =new HelpFrame();
+    }
+    
+    public void FirstPopUp()
+    {
+        JFrame popboi= new JFrame("Storyline");
+        String story="<HTML>You're a \"Wall Street\" broker, and you've fradulently promised that you'd be able to double the amount of money invested within 100 days...";
+        story+="Unforunately, your computer science degree has left you ill-prepared to deal with the fast-paced changes of a volatile stock market.";
+        story+="You decide to forgo the penny stocks and just invest in the blue chip stocks.";
+        story+="Will you be able to pay your clients? Or, will you break the bank and be prosecuted by the SEC?</HTML>";
         
-        stock = new JTextArea(1440,800);
-        stock.setText(stockInfo);
-        stock.setLineWrap(true);
-        stock.setFont(SMALL_FONT);
+        JLabel storyline=new JLabel(story);
+        storyline.setFont(SMALL_FONT);
         
-        Title1.setFont(HEADINGS);
-        Title2.setFont(HEADINGS);
-        Title3.setFont(HEADINGS);
-        
-        helpFrame.add(Title1);
-        helpFrame.add(Title2);
-        helpFrame.add(stock);
-        helpFrame.add(Title3);
+        popboi.add(storyline);
+        popboi.setVisible(true);
+        popboi.setSize(600,225);
     }
 }
