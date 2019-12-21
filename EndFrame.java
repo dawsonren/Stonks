@@ -9,8 +9,14 @@ public class EndFrame extends JFrame implements ActionListener
     private JButton yes;
     private JButton no;
     private JLabel message;
+    
+    private final Font SMALL_FONT = new Font("Times New Roman", Font.PLAIN, 26);
+    private final Font BIG_FONT = new Font("Times New Roman", Font.PLAIN, 36);
+    
     public EndFrame(Portfolio portfolio) {
         super();
+        
+        setLocation(470, 300);
         
         Container win = getContentPane();
         JPanel content = new JPanel();
@@ -19,20 +25,25 @@ public class EndFrame extends JFrame implements ActionListener
             this.setTitle("You Win!");
             
             message = new JLabel("You've evaded the dreaded SEC! Go buy yourself something nice...and don't rip off investors!");
+            message.setFont(SMALL_FONT);
             content.add(message);
         } else {
             this.setTitle("You Lose!");
             
             message = new JLabel("You've been caught by the SEC...see you in court! Don't rip off investors!");
+            message.setFont(SMALL_FONT);
             content.add(message);
         }
         
         JLabel playAgain = new JLabel("Play Again?");
+        playAgain.setFont(BIG_FONT);
         content.add(playAgain);
         
         yes = new JButton("Yes");
+        yes.setFont(SMALL_FONT);
         yes.addActionListener(this);
         no = new JButton("No");
+        no.setFont(SMALL_FONT);
         no.addActionListener(this);
         content.add(yes);
         content.add(no);
