@@ -193,6 +193,7 @@ public class Screen extends JFrame implements ActionListener
 
         setVisible(true);
         setSize(1440,800);
+        FirstPopUp();
     }
     
     public void getStockList()
@@ -262,5 +263,26 @@ public class Screen extends JFrame implements ActionListener
         home.add(stockScreen);
         
         return home;
+    }
+    
+    public void HelpPopUp()
+    {
+       HelpFrame help =new HelpFrame();
+    }
+    
+    public void FirstPopUp()
+    {
+        JFrame popboi= new JFrame("Storyline");
+        String story="<HTML>You're a \"Wall Street\" broker, and you've fradulently promised that you'd be able to double the amount of money invested within 100 days...";
+        story+="Unforunately, your computer science degree has left you ill-prepared to deal with the fast-paced changes of a volatile stock market.";
+        story+="You decide to forgo the penny stocks and just invest in the blue chip stocks.";
+        story+="Will you be able to pay your clients? Or, will you break the bank and be prosecuted by the SEC?</HTML>";
+        
+        JLabel storyline=new JLabel(story);
+        storyline.setFont(SMALL_FONT);
+        
+        popboi.add(storyline);
+        popboi.setVisible(true);
+        popboi.setSize(600,225);
     }
 }
