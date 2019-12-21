@@ -71,8 +71,8 @@ public class BuySellFrame extends JFrame implements ActionListener
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == enter) {
             String shares = numShares.getText();
-            //controls negative numbers and empty string inputs, uses short-circuit
-            if (shares.equals("") || Integer.parseInt(shares) <= 0) {
+            //controls anything not integer
+            if(!shares.matches("[0-9]+")) {
                 errorMessage.setText("Please enter a correct number of shares.");
                 return;
             }
@@ -82,14 +82,12 @@ public class BuySellFrame extends JFrame implements ActionListener
             //control buy/sell
             if (buySell.getSelectedItem().equals("Buy")) {
                 Stock selected = stocks[stockIndex];
-                System.out.println("buy " + selected.getName());
                 //adds stock to portfolio, portfolio handles cash exchange
                 portfolio.addStock(selected, Integer.parseInt(shares));
                 Stock_Simulator_2000.go.updateBottomBar();
                 setVisible(false);
             } else {
                 Stock selected = portStocks[stockIndex];
-                System.out.println("sell " + selected.getName());
                 //removes stock, returns false if not possible
                 boolean possible = portfolio.removeStock(selected, Integer.parseInt(shares));
                 if (!possible) {
@@ -110,7 +108,5 @@ public class BuySellFrame extends JFrame implements ActionListener
                 chooseStock.setModel(new DefaultComboBoxModel((String[]) o));
             }
         }
-        
-        
     }
 }
