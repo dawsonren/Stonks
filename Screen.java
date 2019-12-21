@@ -12,51 +12,115 @@ public class Screen extends JFrame implements ActionListener
     private final Font BIG_FONT = new Font("Times New Roman", Font.PLAIN, 20);
     private final Font HEADINGS = new Font("Times New Roman", Font.BOLD, 22);
     
-    private final int totalStocks = 5;
-    public final String[] stockNames = {"Apple", "Microsoft", "Samsung", "Nintendo", "PlayStation"};
-    public final double startingCash = 100000.0;
+    private final int totalStocks = Stock_Simulator_2000.totalStocks;
+    public final String[] stockNames = Stock_Simulator_2000.stockNames;
+    public final double startingCash = Stock_Simulator_2000.startingCash;
     
     //overall window container
     Container win;
     
     //these are the buttons for stocks
-    private JButton[] stockButtons = new JButton[totalStocks];
+    private JButton[] stockButtons;
     private JButton newDay;
     
-    //m1 is overview, m2 is buy/sell, m3 is help
-    private JMenuItem m1, m2, m3;
+    //m1 is overview, m2 is trade, m3 is help, m4 is saveManager
+    private JMenuItem m1, m2, m3, m4;
     
     //JPanels (p1 is the button panel, p2 is the selected stock screen, and p3 is for total earnings, time, ect.)
-    JPanel p1 = new JPanel();
+    JPanel p1;
     //p2 will contain individual information screens for the number of stocks
-    JPanel[] p2 = new JPanel[totalStocks];
-    JPanel p3 = new JPanel();
-    
-    JFrame helpFrame = new JFrame();
+    JPanel[] p2;
+    JPanel p3;
     
     //infoScreen is for further information inside p2
     private JPanel infoScreen;
     private int stockIndexSelected;
     
     //stocks is used for accessing stock information in general
-    public Stock[] stocks = new Stock[totalStocks];
+    public Stock[] stocks;
     
     //portfolio is used for managing the portfolio
-    public Portfolio portfolio = new Portfolio(totalStocks, startingCash);
+    public Portfolio portfolio;
     
     //labels cash, stockvalue, time, and networth go on the bottom. Info controls what's said in p2.
     private JLabel cash, stockValue, netWorth, time, graph, info;
     
-    public int day = 0;
+    public int day;
     
     JMenuBar bar;
     
-    public Screen()
-    {
+    public Screen() {
         super("Screen");
-        
-        //set window
 
+        portfolio = new Portfolio(totalStocks, startingCash);
+        
+        setup();
+    }
+    
+    public Screen(Portfolio port) {
+        super("Screen");
+
+        portfolio = port;
+        
+        setup();
+    }
+
+    public void actionPerformed (ActionEvent e)
+    {
+        if (e.getSource() == m1) {
+            win.setVisible(false);
+            win.add(bar,BorderLayout.NORTH);
+            win.add(p1,BorderLayout.WEST);
+            win.add(p3, BorderLayout.SOUTH);
+            win.setVisible(true);
+        } else if(e.getSource() == m2) {
+            BuySellFrame bsf = new BuySellFrame();
+        } else if (e.getSource() == m3) {
+            HelpPopUp hpu = new HelpPopUp();
+        } else if (e.getSource() == m4){
+            SaveManager sm = new SaveManager(portfolio);
+        }
+        
+        //changes out the current viewable p2, or stock information when press
+        //the stock's button
+        for (int x = 0; x < totalStocks; x++) {
+            if (e.getSource() == stockButtons[x]) {
+                infoScreen.setVisible(false);
+                win.add(p2[x], BorderLayout.EAST);
+                p2[x].setVisible(true);
+                infoScreen = p2[x];
+                stockIndexSelected = 0;
+            }
+        }
+        
+        //next day button
+        if (e.getSource() == newDay) {
+            day++;
+            //update buttons must come first because it updates stock information
+            updateButtons();
+            updateBottomBar();
+            updateStockInfo();
+            
+            JPanel temp = homeScreen();
+            infoScreen.setVisible(false);
+            win.add(temp, BorderLayout.EAST);
+            p2[stockIndexSelected].setVisible(true);
+            infoScreen = temp;
+        }
+    }
+    
+    public void setup() {
+        //setting up numeric variables and game details 
+        stockButtons = new JButton[totalStocks];
+        day = 0;
+        
+        p1 = new JPanel();
+        p2 = new JPanel[totalStocks];
+        p3 = new JPanel();
+        
+        stocks = new Stock[totalStocks];
+
+        //set window
         win = getContentPane();
         win.setLayout(new BorderLayout());
 
@@ -87,17 +151,21 @@ public class Screen extends JFrame implements ActionListener
         m1 = new JMenuItem("Overview");
         m1.setFont(SMALL_FONT);
         m1.addActionListener(this);
-        m2 = new JMenuItem("Buy and Sell");
+        m2 = new JMenuItem("Trade");
         m2.setFont(SMALL_FONT);
         m2.addActionListener(this);
         m3 = new JMenuItem("Help");
         m3.setFont(SMALL_FONT);
         m3.addActionListener(this);
+        m4 = new JMenuItem("Save");
+        m4.setFont(SMALL_FONT);
+        m4.addActionListener(this);
 
         //JMenu for swtching what you are seeing
         menu.add(m1);
         menu.add(m2);
         menu.add(m3);
+        menu.add(m4);
         bar.add(menu);
         setJMenuBar(bar);
         menu.setFont(BIG_FONT);
@@ -125,51 +193,6 @@ public class Screen extends JFrame implements ActionListener
 
         setVisible(true);
         setSize(1440,800);
-        FirstPopUp();
-    }
-
-    public void actionPerformed (ActionEvent e)
-    {
-        if (e.getSource() == m1) {
-            win.setVisible(false);
-            win.add(bar,BorderLayout.NORTH);
-            win.add(p1,BorderLayout.WEST);
-            win.add(p3, BorderLayout.SOUTH);
-            win.setVisible(true);
-        } else if(e.getSource() == m2) {
-            BuySellFrame frame = new BuySellFrame();
-        } else if (e.getSource() == m3) {
-            HelpPopUp();
-            helpFrame.setVisible(true);
-            helpFrame.setSize(1440,800);
-        }
-        
-        //changes out the current viewable p2, or stock information when press
-        //the stock's button
-        for (int x = 0; x < totalStocks; x++) {
-            if (e.getSource() == stockButtons[x]) {
-                infoScreen.setVisible(false);
-                win.add(p2[x], BorderLayout.EAST);
-                p2[x].setVisible(true);
-                infoScreen = p2[x];
-                stockIndexSelected = 0;
-            }
-        }
-        
-        //next day button
-        if (e.getSource() == newDay) {
-            day++;
-            //update buttons must come first because it updates stock information
-            updateButtons();
-            updateBottomBar();
-            updateStockInfo();
-            
-            JPanel temp = homeScreen();
-            infoScreen.setVisible(false);
-            win.add(temp, BorderLayout.EAST);
-            p2[stockIndexSelected].setVisible(true);
-            infoScreen = temp;
-        }
     }
     
     public void getStockList()
@@ -239,26 +262,5 @@ public class Screen extends JFrame implements ActionListener
         home.add(stockScreen);
         
         return home;
-    }
-    
-    public void HelpPopUp()
-    {
-       HelpFrame help =new HelpFrame();
-    }
-    
-    public void FirstPopUp()
-    {
-        JFrame popboi= new JFrame("Storyline");
-        String story="<HTML>You're a \"Wall Street\" broker, and you've fradulently promised that you'd be able to double the amount of money invested within 100 days...";
-        story+="Unforunately, your computer science degree has left you ill-prepared to deal with the fast-paced changes of a volatile stock market.";
-        story+="You decide to forgo the penny stocks and just invest in the blue chip stocks.";
-        story+="Will you be able to pay your clients? Or, will you break the bank and be prosecuted by the SEC?</HTML>";
-        
-        JLabel storyline=new JLabel(story);
-        storyline.setFont(SMALL_FONT);
-        
-        popboi.add(storyline);
-        popboi.setVisible(true);
-        popboi.setSize(600,225);
     }
 }
