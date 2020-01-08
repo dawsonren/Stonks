@@ -105,28 +105,12 @@ public class SaveManager extends JFrame implements ActionListener
             setVisible(false);
         } else if (e.getSource() == enterLoad) {
             try {
-                System.out.println(fileName2.getText());
-                Portfolio port = loadFile(fileName2.getText() + ".txt");
-                
-                //creates a new instance of Screen
-                Stock_Simulator_2000.go = new Screen(port);
+                loadFile(fileName2.getText() + ".txt");
             } catch (Exception io) {
                 System.out.println(io);
             }
             setVisible(false);
         }
-    }
-    
-    public static void test() {
-        //dummy port
-        Portfolio port = new Portfolio(5, 20);
-        try {
-            port = loadFile("save.txt");
-        } catch (Exception io) {
-            System.out.println(io);
-        }
-        //creates a new instance of Screen
-        Stock_Simulator_2000.go = new Screen(port);
     }
     
     public void saveToFile(String name) throws IOException {
@@ -165,9 +149,10 @@ public class SaveManager extends JFrame implements ActionListener
         pw.close();
     }
     
-    public static Portfolio loadFile(String fileName) throws IOException{
-        HashMap<Stock, Integer> stocks = new HashMap<Stock, Integer>();
-        
+    public void loadFile(String fileName) throws IOException{
+        //HashMap loads the portfolio
+        HashMap<Stock, Integer> owned = new HashMap<Stock, Integer>();
+
         Scanner fr = new Scanner(new File(fileName));
         
         //gets cash, day, size
@@ -177,6 +162,10 @@ public class SaveManager extends JFrame implements ActionListener
         int day = Integer.parseInt(dayString);
         String sizeString = fr.nextLine();
         int size = Integer.parseInt(sizeString);
+        
+        //Stock[] contains all stocks, counter to go through the array
+        Stock[] stocks = new Stock[size];
+        int counter = 0;
         
         Stock currentStock;
         String name = "";
@@ -211,13 +200,21 @@ public class SaveManager extends JFrame implements ActionListener
                 values.add(nextValue);
             } else if (line.equals("")) {
                 //empty line signals gap between stocks
+                currentStock = new Stock(name, values, day, values.get(day - 1), function, volatility, trend20, luck);
+                //insert into portfolio if shares owned greater than 0
                 if (shares > 0) {
-                    currentStock = new Stock(name, values, day, values.get(day - 1), function, volatility, trend20, luck);
-                    stocks.put(currentStock, shares);
+                    owned.put(currentStock, shares);
                 }
+                //put into array regardless
+                stocks[counter] = currentStock;
+                counter++;
             }
         }
-        System.out.println(stocks.size());
-        return new Portfolio(stocks, cash, size);
+        Portfolio port = new Portfolio(owned, cash, size);
+        
+        //Shift current game to a new one
+        Stock_Simulator_2000.go.setVisible(false);
+        Stock_Simulator_2000.go = new Screen(port, day, stocks);
+        Stock_Simulator_2000.go.setVisible(true);
     }
 }
