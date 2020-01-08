@@ -53,15 +53,20 @@ public class Screen extends JFrame implements ActionListener
         super("Screen");
 
         portfolio = new Portfolio(totalStocks, startingCash);
+        day = 0;
         
+        createRandomStocks();
         setup();
     }
     
-    public Screen(Portfolio port) {
+    public Screen(Portfolio port, int d, Stock[] stcks) {
         super("Screen");
 
         portfolio = port;
+        day = d;
         
+        stockButtons = new JButton[totalStocks];
+        stocks = stcks;
         setup();
     }
 
@@ -95,6 +100,11 @@ public class Screen extends JFrame implements ActionListener
         
         //next day button
         if (e.getSource() == newDay) {
+            if (day == 100) {
+                EndFrame end = new EndFrame(portfolio);
+                this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+            }
+            
             day++;
             //update buttons must come first because it updates stock information
             updateButtons();
@@ -110,22 +120,17 @@ public class Screen extends JFrame implements ActionListener
     }
     
     public void setup() {
-        //setting up numeric variables and game details 
-        stockButtons = new JButton[totalStocks];
-        day = 0;
-        
+        //setting up game panel
         p1 = new JPanel();
         p2 = new JPanel[totalStocks];
         p3 = new JPanel();
         
-        stocks = new Stock[totalStocks];
-
         //set window
         win = getContentPane();
         win.setLayout(new BorderLayout());
 
         //set layouts for buttons and initialize stocks and buttons in p1
-        p1.setLayout(new GridLayout(5,1));
+        p1.setLayout(new GridLayout(totalStocks ,1));
         getStockList();
         
         //set panels for p2
@@ -194,14 +199,21 @@ public class Screen extends JFrame implements ActionListener
         setVisible(true);
         setSize(1440,800);
         FirstPopUp();
+        toFront();
+    }
+    
+    public void createRandomStocks() {
+        stockButtons = new JButton[totalStocks];
+        stocks = new Stock[totalStocks];
+        for (int x = 0; x < totalStocks; x++) {
+            //creates stocks
+            stocks[x] = new Stock(stockNames[x]);
+        }
     }
     
     public void getStockList()
     {
         for (int x = 0; x < totalStocks; x++) {
-            //creates stocks
-            stocks[x] = new Stock(stockNames[x]);
-            
             //sets stock buttons
             stockButtons[x] = new JButton(SPACER + stocks[x].getName() + SPACER + "0.00%");
             stockButtons[x].setFont(SMALL_FONT);
@@ -267,12 +279,12 @@ public class Screen extends JFrame implements ActionListener
     
     public void HelpPopUp()
     {
-       HelpFrame help =new HelpFrame();
+       HelpFrame help = new HelpFrame();
     }
     
     public void FirstPopUp()
     {
-        JFrame popboi= new JFrame("Storyline");
+        JFrame firstPopup= new JFrame("Storyline");
         String story="<HTML>You're a \"Wall Street\" broker, and you've fradulently promised that you'd be able to double the amount of money invested within 100 days...";
         story+="Unforunately, your computer science degree has left you ill-prepared to deal with the fast-paced changes of a volatile stock market.";
         story+="You decide to forgo the penny stocks and just invest in the blue chip stocks.";
@@ -281,8 +293,10 @@ public class Screen extends JFrame implements ActionListener
         JLabel storyline=new JLabel(story);
         storyline.setFont(SMALL_FONT);
         
-        popboi.add(storyline);
-        popboi.setVisible(true);
-        popboi.setSize(600,225);
+        firstPopup.add(storyline);
+        firstPopup.setVisible(true);
+        firstPopup.setSize(600,225);
+        firstPopup.setLocation(520, 290);
+        firstPopup.setAlwaysOnTop(true);
     }
 }
