@@ -1,0 +1,48 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class HelpPopUp extends JFrame
+{
+    private final Font SMALL_FONT = new Font("Times New Roman", Font.PLAIN, 18);
+    private final Font BIG_FONT = new Font("Times New Roman", Font.PLAIN, 20);
+    private final Font HEADINGS = new Font("Times New Roman", Font.BOLD, 22);
+    
+    JLabel storyline;
+    JTextArea stock;
+    JLabel buySell;
+    String stockInfo;
+    JLabel title1, title2, title3;
+    
+    public HelpPopUp()
+    {
+        super("How to Play");
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        
+        title2 = new JLabel("View Stocks");
+        title1= new JLabel("Game View and Basics");
+        title3= new JLabel("How to Buy/Sell");
+        
+        stockInfo="•The 5 buttons on the left side of the screen are for 5 stocks. \n•Click on a stock name to see it's value over all time.";
+        stockInfo+="If you would like to view weekly or monthy simply click \"See past month\" or \"See past week\" \n•This screen also displays the current stock price (the cost of 1 share)";
+        stockInfo+="\n•When you hit next day, it will default back to your portfolio until you select a stock. Your portfolio displays the number of shared of each stock you own.";
+        stockInfo+="\n•In addition, when you hit next day next to stock names you will see the percent increase or decrease of value from yesterday.";
+        
+        stock = new JTextArea(1440,800);
+        stock.setText(stockInfo);
+        stock.setLineWrap(true);
+        stock.setFont(SMALL_FONT);
+        
+        title1.setFont(HEADINGS);
+        title2.setFont(HEADINGS);
+        title3.setFont(HEADINGS);
+        
+        add(title1);
+        add(title2);
+        add(stock);
+        add(title3);
+        
+        setVisible(true);
+        setSize(1440,800);
+    }
+}
