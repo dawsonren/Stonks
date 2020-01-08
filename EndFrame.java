@@ -50,7 +50,7 @@ public class EndFrame extends JFrame implements ActionListener
         
         win.add(content);
         
-        setSize(500, 150);
+        setSize(800, 150);
         setVisible(true);
     }
     public void actionPerformed(ActionEvent e) {
