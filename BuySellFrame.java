@@ -66,6 +66,7 @@ public class BuySellFrame extends JFrame implements ActionListener
         win.add(myPanel);
         
         setSize(300, 150);
+        setLocation(470, 300);
         setVisible(true);
     }
     public void actionPerformed(ActionEvent e) {
